@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Article Expander
 
-## Getting Started
+A minimalist demo application that explores dynamic AI content expansion using OpenAI. The app features a clean single-page interface with dynamic text scaling and two variations you can toggle between.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Single-Page Experience
+- **Random topic generation** - Each page refresh picks a new random topic
+- **Dynamic text scaling** - Text starts at 4rem (headline) and scales down to 1rem (full article)
+- **Bottom toolbar** - Simple controls without cluttering the content
+- **Toggle between modes** - Switch between pre-loaded and on-demand generation
+- **Minimal UI** - Only the text content is displayed, no containers or extra elements
+
+### Variation 1: Pre-loaded Mode
+- Generates all 11 levels of content (from headline to full article) at once
+- Instant expansion with no latency when moving the slider
+- Best for demonstrating smooth UX with pre-cached content
+
+### Variation 2: On-Demand Mode
+- Generates content dynamically as you move the slider
+- Tests real-time AI generation and latency
+- Best for understanding the performance characteristics of dynamic content
+
+## Setup
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Set up your OpenAI API key:**
+   
+   Create a `.env.local` file in the root directory:
+   ```bash
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
+   Replace `your_openai_api_key_here` with your actual OpenAI API key.
+
+3. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open your browser:**
+   
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Usage
+
+1. Open the app - a random topic is automatically generated
+2. Watch as content is generated (Pre-loaded mode by default)
+3. Use the slider in the bottom toolbar to expand from headline (0) to full article (10)
+4. Toggle between Pre-loaded and On-demand modes to compare approaches
+5. Refresh the page to get a new random topic
+
+## Tech Stack
+
+- **Next.js 15** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **shadcn/ui** - Beautiful, accessible UI components
+- **Tailwind CSS** - Utility-first styling
+- **OpenAI API** - AI content generation with GPT-4o-mini
+
+## Project Structure
+
+```
+├── app/
+│   ├── api/
+│   │   ├── generate/          # On-demand content generation
+│   │   └── generate-full/     # Pre-loaded content generation
+│   └── page.tsx               # Main app with both variations
+├── components/
+│   └── ui/                    # shadcn/ui components
+│       ├── slider.tsx         # Range slider
+│       ├── toggle.tsx         # Mode toggle button
+│       └── ...                # Other UI components
+└── .env.local                 # Environment variables (create this)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## API Routes
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### POST /api/generate
+Generates content for a specific expansion level (0-10).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Request:**
+```json
+{
+  "topic": "The history of artificial intelligence",
+  "level": 5
+}
+```
 
-## Learn More
+**Response:**
+```json
+{
+  "content": "Generated article content..."
+}
+```
 
-To learn more about Next.js, take a look at the following resources:
+### POST /api/generate-full
+Generates all 11 levels of content at once.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Request:**
+```json
+{
+  "topic": "The history of artificial intelligence"
+}
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Response:**
+```json
+{
+  "levels": [
+    { "level": 0, "content": "Headline..." },
+    { "level": 1, "content": "Brief summary..." },
+    ...
+  ]
+}
+```
 
-## Deploy on Vercel
+## Notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- The app uses GPT-4o-mini for cost-effective content generation
+- Content length increases progressively from ~10 words (headline) to ~1000 words (full article)
+- Variation 1 makes 11 parallel API calls on initial generation
+- Variation 2 makes individual API calls as needed
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+MIT

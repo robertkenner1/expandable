@@ -1,65 +1,173 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Slider } from '@/components/ui/slider';
+
+const TOPICS = [
+  'The history of artificial intelligence',
+  'How quantum computers work',
+  'The future of renewable energy',
+  'The science behind climate change',
+  'The evolution of the internet',
+  'The impact of social media on society',
+  'The development of electric vehicles',
+  'The exploration of Mars',
+  'The rise of cryptocurrency',
+  'The future of work and automation',
+  'The discovery of DNA',
+  'The history of space exploration',
+  'The development of vaccines',
+  'The invention of the printing press',
+  'The industrial revolution',
+];
+
+interface ArticleLevel {
+  level: number;
+  content: string;
+}
 
 export default function Home() {
+  const [sliderValue, setSliderValue] = useState([0]);
+  const [articleLevels, setArticleLevels] = useState<ArticleLevel[]>([]);
+  const [currentContent, setCurrentContent] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [showContent, setShowContent] = useState(false);
+  const [topic, setTopic] = useState('');
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [typedContent, setTypedContent] = useState('');
+
+  // Generate random topic on mount
+  useEffect(() => {
+    const randomTopic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
+    setTopic(randomTopic);
+  }, []);
+
+  // Initial generation when topic is set (always pre-loaded)
+  useEffect(() => {
+    if (topic) {
+      generateFullArticle();
+    }
+  }, [topic]);
+
+  // Delay showing content until slider animation completes
+  useEffect(() => {
+    if (!isLoading) {
+      // Wait for slider animation to complete:
+      // - Pulse completion: up to 400ms
+      // - Collapsed phase: 50ms
+      // - Expanding phase: 600ms
+      // Total: ~1100ms
+      const timer = setTimeout(() => {
+        setShowContent(true);
+      }, 1100);
+      
+      return () => clearTimeout(timer);
+    } else {
+      setShowContent(false);
+    }
+  }, [isLoading]);
+
+  const generateFullArticle = async () => {
+    setIsLoading(true);
+    setIsFirstLoad(true); // Reset for new content
+    try {
+      const response = await fetch('/api/generate-full', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic }),
+      });
+
+      if (!response.ok) throw new Error('Failed to generate article');
+
+      const data = await response.json();
+      setArticleLevels(data.levels);
+      setCurrentContent(data.levels[0].content);
+      setSliderValue([0]);
+    } catch (error) {
+      console.error('Error generating article:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Update content when slider moves
+  useEffect(() => {
+    if (articleLevels.length > 0) {
+      const level = articleLevels.find((l) => l.level === sliderValue[0]);
+      if (level) {
+        setCurrentContent(level.content);
+        // Reset typing animation when moving away from level 0
+        if (sliderValue[0] !== 0) {
+          setIsFirstLoad(false);
+        }
+      }
+    }
+  }, [sliderValue[0], articleLevels]);
+
+  // Typing animation for initial headline
+  useEffect(() => {
+    if (!isFirstLoad || sliderValue[0] !== 0 || !currentContent || !showContent) {
+      setTypedContent(currentContent);
+      return;
+    }
+
+    // Reset typed content
+    setTypedContent('');
+    let currentIndex = 0;
+
+    const typingInterval = setInterval(() => {
+      if (currentIndex < currentContent.length) {
+        setTypedContent(currentContent.slice(0, currentIndex + 1));
+        currentIndex++;
+      } else {
+        clearInterval(typingInterval);
+        setIsFirstLoad(false); // Only animate once
+      }
+    }, 30); // 30ms per character for swift typing
+
+    return () => clearInterval(typingInterval);
+  }, [currentContent, isFirstLoad, sliderValue, showContent]);
+
+  // Calculate font size: 4rem at level 0, 1rem at level 9
+  const fontSize = 4 - ((sliderValue[0] / 9) * 3);
+  
+  // Calculate line height: tighter for larger text, more relaxed for smaller
+  // At 4rem: 1.2, at 1rem: 1.6
+  const lineHeight = 1.2 + ((sliderValue[0] / 9) * 0.4);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-background">
+      <div className="pt-12 pb-12 px-12">
+        {/* Slider above content */}
+        <div className="mb-12">
+          <Slider
+            value={sliderValue}
+            onValueChange={setSliderValue}
+            min={0}
+            max={9}
+            step={1}
+            disabled={isLoading}
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Main content area - only text */}
+        {showContent && (
+          <div
+            className="text-foreground transition-all duration-300"
+            style={{ fontSize: `${fontSize}rem`, lineHeight: lineHeight }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            {(isFirstLoad && sliderValue[0] === 0 ? typedContent : currentContent)
+              .split('\n')
+              .map((paragraph, index) => (
+                paragraph.trim() ? (
+                  <p key={index} className="mb-4">
+                    {paragraph}
+                  </p>
+                ) : null
+              ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
