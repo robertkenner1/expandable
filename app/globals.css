@@ -129,3 +129,16 @@
     transform: translate(-50%, -50%) scale(3);
   }
 }
+
+@keyframes fadeFromBlue {
+  0% {
+    color: #3b82f6; /* Blue-500 */
+  }
+  100% {
+    color: oklch(0.145 0 0); /* Fade to foreground color (black) */
+  }
+}
+
+.animate-fade-from-blue {
+  animation: fadeFromBlue 1.5s ease-out forwards !important;
+}

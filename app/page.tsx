@@ -35,6 +35,9 @@ export default function Home() {
   const [topic, setTopic] = useState('');
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [typedContent, setTypedContent] = useState('');
+  const [previousSliderValue, setPreviousSliderValue] = useState(0);
+  const [previousContent, setPreviousContent] = useState('');
+  const [showNewContent, setShowNewContent] = useState(false);
 
   // Generate random topic on mount
   useEffect(() => {
@@ -95,11 +98,27 @@ export default function Home() {
     if (articleLevels.length > 0) {
       const level = articleLevels.find((l) => l.level === sliderValue[0]);
       if (level) {
+        // Trigger blue fade animation when slider moves forward (revealing more content)
+        if (sliderValue[0] > previousSliderValue && currentContent) {
+          setPreviousContent(currentContent);
+          setShowNewContent(true);
+          // Reset after animation completes (1.5s)
+          setTimeout(() => {
+            setShowNewContent(false);
+            setPreviousContent('');
+          }, 1500);
+        } else {
+          setPreviousContent('');
+          setShowNewContent(false);
+        }
+        
         setCurrentContent(level.content);
         // Reset typing animation when moving away from level 0
         if (sliderValue[0] !== 0) {
           setIsFirstLoad(false);
         }
+        
+        setPreviousSliderValue(sliderValue[0]);
       }
     }
   }, [sliderValue[0], articleLevels]);
@@ -156,15 +175,55 @@ export default function Home() {
             className="text-foreground transition-all duration-300"
             style={{ fontSize: `${fontSize}rem`, lineHeight: lineHeight }}
           >
-            {(isFirstLoad && sliderValue[0] === 0 ? typedContent : currentContent)
-              .split('\n')
-              .map((paragraph, index) => (
-                paragraph.trim() ? (
-                  <p key={index} className="mb-4">
-                    {paragraph}
-                  </p>
-                ) : null
-              ))}
+            {(() => {
+              const displayContent = isFirstLoad && sliderValue[0] === 0 ? typedContent : currentContent;
+              const paragraphs = displayContent.split('\n').filter(p => p.trim());
+              
+              // If we're animating new content, split into old and new paragraphs
+              if (showNewContent && previousContent) {
+                const previousLength = previousContent.length;
+                
+                return paragraphs.map((paragraph, index) => {
+                  const paragraphStart = displayContent.indexOf(paragraph);
+                  const paragraphEnd = paragraphStart + paragraph.length;
+                  
+                  // Paragraph is entirely old content
+                  if (paragraphEnd <= previousLength) {
+                    return (
+                      <p key={index} className="mb-4">
+                        {paragraph}
+                      </p>
+                    );
+                  }
+                  
+                  // Paragraph is entirely new content
+                  if (paragraphStart >= previousLength) {
+                    return (
+                      <p key={index} className="mb-4 animate-fade-from-blue">
+                        {paragraph}
+                      </p>
+                    );
+                  }
+                  
+                  // Paragraph spans old and new content
+                  const oldPart = paragraph.slice(0, previousLength - paragraphStart);
+                  const newPart = paragraph.slice(previousLength - paragraphStart);
+                  return (
+                    <p key={index} className="mb-4">
+                      <span>{oldPart}</span>
+                      <span className="animate-fade-from-blue">{newPart}</span>
+                    </p>
+                  );
+                });
+              }
+              
+              // Otherwise render normally with paragraphs
+              return paragraphs.map((paragraph, index) => (
+                <p key={index} className="mb-4">
+                  {paragraph}
+                </p>
+              ));
+            })()}
           </div>
         )}
       </div>
