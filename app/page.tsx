@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Slider } from '@/components/ui/slider';
+import ExperimentNav from '@/components/ExperimentNav';
 
 const TOPICS = [
   'The history of artificial intelligence',
@@ -226,7 +227,8 @@ export default function Home() {
             })()}
           </div>
         )}
-      </div>
+        </div>
+      <ExperimentNav />
     </div>
   );
 }

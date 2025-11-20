@@ -5,6 +5,10 @@ import * as SliderPrimitive from "@radix-ui/react-slider"
 
 import { cn } from "@/lib/utils"
 
+interface SliderProps extends React.ComponentProps<typeof SliderPrimitive.Root> {
+  width?: number
+}
+
 function Slider({
   className,
   defaultValue,
@@ -12,8 +16,9 @@ function Slider({
   min = 0,
   max = 100,
   disabled,
+  width = 170,
   ...props
-}: React.ComponentProps<typeof SliderPrimitive.Root>) {
+}: SliderProps) {
   const [mounted, setMounted] = React.useState(false)
   const [hoveredMarker, setHoveredMarker] = React.useState<number | null>(null)
   const [animationPhase, setAnimationPhase] = React.useState<'loading' | 'collapsed' | 'expanding' | 'interactive'>('loading')
@@ -168,11 +173,11 @@ function Slider({
     const linearPercentage = ((markerValue - min) / (max - min)) * 100
     
     // Final position (horizontal slider)
-    const finalX = (linearPercentage / 100) * 170 - 85
+    const finalX = (linearPercentage / 100) * width - (width / 2)
     const finalY = 0
     
     // Starting position (all overlapping at first dot position)
-    const startX = -85
+    const startX = -(width / 2)
     const startY = 0
     
     // Calculate position based on animation phase
@@ -236,7 +241,7 @@ function Slider({
       <div 
         className="relative"
         style={{ 
-          width: '170px', 
+          width: `${width}px`, 
           height: '20px',
         }}
       />
@@ -251,7 +256,7 @@ function Slider({
       ref={containerRef}
       className="relative"
       style={{ 
-        width: '170px', 
+        width: `${width}px`, 
         height: containerHeight,
         cursor: animationPhase === 'interactive' ? 'pointer' : 'default'
       }}

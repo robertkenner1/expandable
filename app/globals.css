@@ -47,35 +47,35 @@
   --radius: 0.625rem;
   --background: #FCF9F6;
   --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
+  --card: oklch(1 0.008 75);
   --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
+  --popover: oklch(1 0.008 75);
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --primary-foreground: oklch(0.985 0.008 75);
+  --secondary: oklch(0.97 0.008 75);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
+  --muted: oklch(0.97 0.008 75);
+  --muted-foreground: oklch(0.556 0.008 75);
+  --accent: oklch(0.97 0.008 75);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: oklch(0.922 0.008 75);
+  --input: oklch(0.922 0.008 75);
+  --ring: oklch(0.708 0.008 75);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: oklch(0.985 0.008 75);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0.008 75);
+  --sidebar-accent: oklch(0.97 0.008 75);
   --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-border: oklch(0.922 0.008 75);
+  --sidebar-ring: oklch(0.708 0.008 75);
 }
 
 .dark {
@@ -141,4 +141,64 @@
 
 .animate-fade-from-blue {
   animation: fadeFromBlue 1.5s ease-out forwards !important;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    oklch(0.556 0.008 75) 0%,
+    oklch(0.8 0.008 75) 50%,
+    oklch(0.556 0.008 75) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes slideInColumn {
+  0% {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-column {
+  animation: slideInColumn 0.5s ease-out forwards;
+}
+
+@keyframes cellHighlight {
+  0%, 100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: oklch(0.75 0.05 75 / 0.5);
+  }
+}
+
+.animate-cell-highlight {
+  animation: cellHighlight 0.8s ease-in-out;
+}
+
+@keyframes cellTypeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

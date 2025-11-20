@@ -1,131 +1,57 @@
-# Article Expander
+# Prescient
 
-A minimalist demo application that explores dynamic AI content expansion using OpenAI. The app features a clean single-page interface with dynamic text scaling and two variations you can toggle between.
+An AI pattern library exploring provocative experiments in human-AI interaction.
 
-## Features
+## Purpose
 
-### Single-Page Experience
-- **Random topic generation** - Each page refresh picks a new random topic
-- **Dynamic text scaling** - Text starts at 4rem (headline) and scales down to 1rem (full article)
-- **Bottom toolbar** - Simple controls without cluttering the content
-- **Toggle between modes** - Switch between pre-loaded and on-demand generation
-- **Minimal UI** - Only the text content is displayed, no containers or extra elements
+Prescient is a collection of experimental interaction models that push the boundaries of generative AI. These patterns demonstrate the **proactive AI principle**: that AI can be predictive, anticipatory, and naturally integrated into user experiences.
 
-### Variation 1: Pre-loaded Mode
-- Generates all 11 levels of content (from headline to full article) at once
-- Instant expansion with no latency when moving the slider
-- Best for demonstrating smooth UX with pre-cached content
+Each experiment explores how AI can interact with humans in specific ways—not as a separate tool you invoke, but as an ambient presence that feels natural and "just there." When done well, these interactions have a distinct feel to them: airy, intuitive, and seamlessly integrated.
 
-### Variation 2: On-Demand Mode
-- Generates content dynamically as you move the slider
-- Tests real-time AI generation and latency
-- Best for understanding the performance characteristics of dynamic content
+## Philosophy
 
-## Setup
+These are radical experiments designed to explore what's possible when AI:
+- **Anticipates** user needs before they're explicitly stated
+- **Transforms** unstructured thought into structured action
+- **Reacts** contextually to what users point at, not just what they click
+- **Augments** decision-making without taking control
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+The patterns are intentionally provocative—pushing beyond conventional UI paradigms to discover new interaction models that could be deployed by feature teams in production applications.
 
-2. **Set up your OpenAI API key:**
-   
-   Create a `.env.local` file in the root directory:
-   ```bash
-   OPENAI_API_KEY=your_openai_api_key_here
-   ```
+## Experiments
 
-   Replace `your_openai_api_key_here` with your actual OpenAI API key.
+### Depth (`/`)
+Progressive content expansion controlled by a single slider. Demonstrates how AI can generate content at varying levels of detail, allowing users to control depth rather than consuming fixed content.
 
-3. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
+**Pattern**: Adaptive content generation  
+**Use case**: Articles, documentation, explanations that serve different expertise levels
 
-4. **Open your browser:**
-   
-   Navigate to [http://localhost:3000](http://localhost:3000)
+### Decide (`/table`)
+AI-powered decision-making table that transforms messy pros/cons into weighted, structured criteria. Two models work in sequence: **Organize** (structure unstructured data) and **Rank** (provide recommendations based on priorities).
 
-## Usage
+**Pattern**: Intelligent data transformation  
+**Use case**: Complex decisions with multiple options and criteria
 
-1. Open the app - a random topic is automatically generated
-2. Watch as content is generated (Pre-loaded mode by default)
-3. Use the slider in the bottom toolbar to expand from headline (0) to full article (10)
-4. Toggle between Pre-loaded and On-demand modes to compare approaches
-5. Refresh the page to get a new random topic
+### React (`/hover`)
+Cursor-level AI that observes and reacts to what you point at. The interface becomes responsive to attention rather than explicit action—AI commentary appears contextually as you explore.
 
-## Tech Stack
+**Pattern**: Ambient contextual assistance  
+**Use case**: Learning interfaces, exploratory tools, contextual help systems
 
-- **Next.js 15** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **shadcn/ui** - Beautiful, accessible UI components
-- **Tailwind CSS** - Utility-first styling
-- **OpenAI API** - AI content generation with GPT-4o-mini
+## Principles
 
-## Project Structure
+1. **Proactive, not reactive**: AI anticipates and suggests rather than waiting for commands
+2. **Transparent transformations**: Users see and control how AI changes their data
+3. **Natural integration**: AI features feel embedded, not bolted on
+4. **Lightweight interactions**: Minimal UI chrome, maximum contextual relevance
+5. **Experimental by design**: These patterns prioritize learning over polish
 
-```
-├── app/
-│   ├── api/
-│   │   ├── generate/          # On-demand content generation
-│   │   └── generate-full/     # Pre-loaded content generation
-│   └── page.tsx               # Main app with both variations
-├── components/
-│   └── ui/                    # shadcn/ui components
-│       ├── slider.tsx         # Range slider
-│       ├── toggle.tsx         # Mode toggle button
-│       └── ...                # Other UI components
-└── .env.local                 # Environment variables (create this)
-```
+## For Teams
 
-## API Routes
+These patterns are designed to inspire feature teams exploring how to integrate AI into their products. Each experiment can be adapted, remixed, or used as a reference for building similar interactions.
 
-### POST /api/generate
-Generates content for a specific expansion level (0-10).
+The code is intentionally kept readable and well-documented (see `TABLE_DEVELOPMENT.md` for an example of the iterative development process) to help teams understand not just *what* was built, but *why* certain decisions were made.
 
-**Request:**
-```json
-{
-  "topic": "The history of artificial intelligence",
-  "level": 5
-}
-```
+---
 
-**Response:**
-```json
-{
-  "content": "Generated article content..."
-}
-```
-
-### POST /api/generate-full
-Generates all 11 levels of content at once.
-
-**Request:**
-```json
-{
-  "topic": "The history of artificial intelligence"
-}
-```
-
-**Response:**
-```json
-{
-  "levels": [
-    { "level": 0, "content": "Headline..." },
-    { "level": 1, "content": "Brief summary..." },
-    ...
-  ]
-}
-```
-
-## Notes
-
-- The app uses GPT-4o-mini for cost-effective content generation
-- Content length increases progressively from ~10 words (headline) to ~1000 words (full article)
-- Variation 1 makes 11 parallel API calls on initial generation
-- Variation 2 makes individual API calls as needed
-
-## License
-
-MIT
+**Note**: Prescient is experimental software. Patterns are meant to provoke thought and exploration, not serve as production-ready components.
